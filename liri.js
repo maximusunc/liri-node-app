@@ -26,7 +26,14 @@ function liri() {
 				if (!error) {
 					// iterate through tweets and console each one out
 					for (var i = 0; i < tweets.length; i++) {
-						console.log("Tweet #", i+1 , ": ", tweets[i].text);
+						var tweet = "Tweet #" + (i + 1) + ": " + tweets[i].text;
+						console.log(tweet);
+						// append info to log.txt
+						fs.appendFile("log.txt", tweet + "\n", (err) => {
+							if (err) {
+								throw err;
+							};
+						});
 					};
 				};
 			});
@@ -44,13 +51,23 @@ function liri() {
 				if (err) {
 					return console.log("Error at: " + err);
 				};
-				console.log("Artist: ", data.tracks.items[0].artists[0].name);
-				console.log("Track Name: ", data.tracks.items[0].name);
+				var artist = "Artist: " + data.tracks.items[0].artists[0].name;
+				var track = "Track Name: " + data.tracks.items[0].name;
+				var preview = data.tracks.items[0].preview_url;
+				var album = "Album Name: " + data.tracks.items[0].album.name;
+				console.log(artist);
+				console.log(track);
 				// if there is no preview url, don't write anything
-				if (data.tracks.items[0].preview_url !== null) {
-					console.log("Preview URL: ", data.tracks.items[0].preview_url);
+				if (preview !== null) {
+					console.log("Preview URL: ", preview);
 				};
-				console.log("Album Name: ", data.tracks.items[0].album.name);
+				console.log(album);
+				// append the info to log.txt
+				fs.appendFile("log.txt", artist + "\n" + track + "\nPreview URL: " + preview + "\n" + album + "\n", (err) => {
+					if (err) {
+						throw err;
+					};
+				});
 			});
 			break;
 		case "movie-this":
@@ -64,14 +81,35 @@ function liri() {
 					console.log("Error: ", error);
 				};
 				var movie = JSON.parse(body);
-				console.log("Title: ", movie.Title);
-				console.log("Released: ", movie.Year);
-				console.log("IMDB Rating: ", movie.imdbRating);
-				console.log("Rotten Tomatoes: ", movie.Ratings[1].Value);
-				console.log("Produced In: ", movie.Country);
-				console.log("Language: ", movie.Language);
-				console.log("Plot: ", movie.Plot);
-				console.log("Actors: ", movie.Actors);
+				var title = "Title: " + movie.Title;
+				var year = "Released: " + movie.Year;
+				var imdb = "IMDB Rating: " + movie.imdbRating;
+				var produced = "Produced In: " + movie.Country;
+				var lang = "Language: " + movie.Language;
+				var plot = "Plot: " + movie.Plot;
+				var actors = "Actors: " + movie.Actors;
+				console.log(title);
+				console.log(year);
+				console.log(imdb);
+				// if there is no rotten tomatoes rating, don't write
+				if (movie.Ratings[1] !== undefined) {
+					var rotten = "Rotten Tomatoes: " + movie.Ratings[1].Value;
+					console.log(rotten);
+				} else {
+					var rotten = "Rotten Tomatoes: Not Rated";
+					console.log(rotten);
+				};
+				console.log(produced);
+				console.log(lang);
+				console.log(plot);
+				console.log(actors);
+				// append the info to log.txt
+				fs.appendFile("log.txt", title + "\n" + year + "\n" + imdb + "\n" + rotten + "\n"
+					 + produced + "\n" + lang + "\n" + plot + "\n" + actors + "\n", (err) => {
+					if (err) {
+						throw err;
+					};
+				});
 			});
 			break;
 		case "do-what-it-says":
@@ -85,7 +123,6 @@ function liri() {
 				thing = arr[1];
 				// rules out my-tweets
 				if (thing !== undefined) {
-					console.log("test");
 					thing = thing.slice(1, -1);
 				};
 				// calls the whole switch cases again with random txt values
